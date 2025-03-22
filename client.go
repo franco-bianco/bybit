@@ -410,7 +410,7 @@ func (c *Client) postForm(path string, body url.Values, dst interface{}) error {
 
 	u, err := url.Parse(c.baseURL)
 	if err != nil {
-		return nil
+		return err
 	}
 	u.Path = path
 
@@ -421,9 +421,6 @@ func (c *Client) postForm(path string, body url.Values, dst interface{}) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if err != nil {
-		return err
-	}
 
 	if err := c.Request(req, &dst); err != nil {
 		return err
