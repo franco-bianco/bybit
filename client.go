@@ -483,3 +483,37 @@ func (c *Client) SyncServerTime() error {
 
 	return c.updateSyncTimeDelta(r.Result.TimeNano, time.Now().UnixNano())
 }
+
+// WithProxy :
+func (c *Client) WithProxy(proxyStr string) *Client {
+	parts := strings.Split(proxyStr, ":")
+
+	var proxyURL *url.URL
+	var err error
+
+	if len(parts) == 2 {
+		// IP:PORT format
+		proxyURL, err = url.Parse(fmt.Sprintf("http://%s:%s", parts[0], parts[1]))
+	} else if len(parts) == 4 {
+		// IP:PORT:USER:PASS format
+		proxyURL, err = url.Parse(fmt.Sprintf("http://%s:%s@%s:%s", parts[2], parts[3], parts[0], parts[1]))
+	} else {
+		c.logger.Printf("invalid proxy format: %s", proxyStr)
+		return c
+	}
+
+	if err != nil {
+		c.logger.Printf("failed to parse proxy: %s", err)
+		return c
+	}
+
+	transport := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+
+	c.httpClient = &http.Client{
+		Transport: transport,
+	}
+
+	return c
+}
