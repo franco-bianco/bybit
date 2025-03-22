@@ -5,8 +5,8 @@ package integrationtestv5order
 import (
 	"testing"
 
-	"github.com/hirokisan/bybit/v2"
-	"github.com/hirokisan/bybit/v2/integrationtest/testhelper"
+	"github.com/franco-bianco/bybit/v2"
+	"github.com/franco-bianco/bybit/v2/integrationtest/testhelper"
 	"github.com/stretchr/testify/require"
 )
 

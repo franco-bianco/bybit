@@ -11,7 +11,7 @@ bybit is a bybit client for the Go programming language.
 ### REST API
 
 ```golang
-import "github.com/hirokisan/bybit/v2"
+import "github.com/franco-bianco/bybit/v2"
 
 client := bybit.NewClient().WithAuth("your api key", "your api secret")
 res, err := client.Future().InversePerpetual().Balance(bybit.CoinBTC)
@@ -21,8 +21,9 @@ res, err := client.Future().InversePerpetual().Balance(bybit.CoinBTC)
 ### WebSocket API
 
 for single use
+
 ```golang
-import "github.com/hirokisan/bybit/v2"
+import "github.com/franco-bianco/bybit/v2"
 
 wsClient := bybit.NewWebsocketClient()
 svc, err := wsClient.Spot().V1().PublicV1()
@@ -39,8 +40,9 @@ svc.Start(context.Background())
 ```
 
 for multiple use
+
 ```golang
-import "github.com/hirokisan/bybit/v2"
+import "github.com/franco-bianco/bybit/v2"
 
 wsClient := bybit.NewWebsocketClient()
 
@@ -78,8 +80,9 @@ wsClient.Start(context.Background(), executors)
 ```
 
 V5 usage
+
 ```golang
-import "github.com/hirokisan/bybit/v2"
+import "github.com/franco-bianco/bybit/v2"
 
 wsClient := bybit.NewWebsocketClient().WithBaseURL("wss://stream-testnet.bybit.com").WithAuth("key", "secret")
 svc, err := wsClient.V5().Private()
@@ -182,7 +185,6 @@ The following API endpoints have been implemented
 #### User
 
 - [`/v5/user/query-api` Get API Key Information](https://bybit-exchange.github.io/docs/v5/user/apikey-info)
-
 
 ### [deprecated] REST API
 
