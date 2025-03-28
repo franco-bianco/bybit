@@ -188,6 +188,9 @@ func (r *V5WebsocketPublicTickerResponse) Key() V5WebsocketPublicTickerParamKey 
 
 // addParamTickerFunc :
 func (s *V5WebsocketPublicService) addParamTickerFunc(key V5WebsocketPublicTickerParamKey, f func(V5WebsocketPublicTickerResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramTickerMap[key]; exist {
 		return errors.New("already registered for this key")
 	}
@@ -197,11 +200,17 @@ func (s *V5WebsocketPublicService) addParamTickerFunc(key V5WebsocketPublicTicke
 
 // removeParamTickerFunc :
 func (s *V5WebsocketPublicService) removeParamTickerFunc(key V5WebsocketPublicTickerParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramTickerMap, key)
 }
 
 // retrieveTickerFunc :
 func (s *V5WebsocketPublicService) retrieveTickerFunc(key V5WebsocketPublicTickerParamKey) (func(V5WebsocketPublicTickerResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramTickerMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

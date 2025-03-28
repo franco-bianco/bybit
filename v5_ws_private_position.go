@@ -99,6 +99,9 @@ func (r *V5WebsocketPrivatePositionResponse) Key() V5WebsocketPrivateParamKey {
 
 // addParamPositionFunc :
 func (s *V5WebsocketPrivateService) addParamPositionFunc(param V5WebsocketPrivateParamKey, f func(V5WebsocketPrivatePositionResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramPositionMap[param]; exist {
 		return errors.New("already registered for this param")
 	}
@@ -108,11 +111,17 @@ func (s *V5WebsocketPrivateService) addParamPositionFunc(param V5WebsocketPrivat
 
 // removeParamPositionFunc :
 func (s *V5WebsocketPrivateService) removeParamPositionFunc(key V5WebsocketPrivateParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramPositionMap, key)
 }
 
 // retrievePositionFunc :
 func (s *V5WebsocketPrivateService) retrievePositionFunc(key V5WebsocketPrivateParamKey) (func(V5WebsocketPrivatePositionResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramPositionMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

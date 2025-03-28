@@ -125,6 +125,9 @@ func (r *V5WebsocketPublicKlineResponse) Key() V5WebsocketPublicKlineParamKey {
 
 // addParamKlineFunc :
 func (s *V5WebsocketPublicService) addParamKlineFunc(key V5WebsocketPublicKlineParamKey, f func(V5WebsocketPublicKlineResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramKlineMap[key]; exist {
 		return errors.New("already registered for this key")
 	}
@@ -134,11 +137,17 @@ func (s *V5WebsocketPublicService) addParamKlineFunc(key V5WebsocketPublicKlineP
 
 // removeParamTradeFunc :
 func (s *V5WebsocketPublicService) removeParamKlineFunc(key V5WebsocketPublicKlineParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramKlineMap, key)
 }
 
 // retrievePositionFunc :
 func (s *V5WebsocketPublicService) retrieveKlineFunc(key V5WebsocketPublicKlineParamKey) (func(V5WebsocketPublicKlineResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramKlineMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

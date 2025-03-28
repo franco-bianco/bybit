@@ -93,6 +93,9 @@ func (r *V5WebsocketPublicLiquidationResponse) Key() V5WebsocketPublicLiquidatio
 
 // addParamLiquidationFunc :
 func (s *V5WebsocketPublicService) addParamLiquidationFunc(key V5WebsocketPublicLiquidationParamKey, f func(V5WebsocketPublicLiquidationResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramLiquidationMap[key]; exist {
 		return errors.New("already registered for this key")
 	}
@@ -102,11 +105,17 @@ func (s *V5WebsocketPublicService) addParamLiquidationFunc(key V5WebsocketPublic
 
 // removeParamLiquidationFunc :
 func (s *V5WebsocketPublicService) removeParamLiquidationFunc(key V5WebsocketPublicLiquidationParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramLiquidationMap, key)
 }
 
 // retrievePositionFunc :
 func (s *V5WebsocketPublicService) retrieveLiquidationFunc(key V5WebsocketPublicLiquidationParamKey) (func(V5WebsocketPublicLiquidationResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramLiquidationMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

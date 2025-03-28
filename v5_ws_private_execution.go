@@ -100,6 +100,9 @@ func (r *V5WebsocketPrivateExecutionResponse) Key() V5WebsocketPrivateParamKey {
 
 // addParamExecutionFunc :
 func (s *V5WebsocketPrivateService) addParamExecutionFunc(param V5WebsocketPrivateParamKey, f func(V5WebsocketPrivateExecutionResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramExecutionMap[param]; exist {
 		return errors.New("already registered for this param")
 	}
@@ -109,11 +112,17 @@ func (s *V5WebsocketPrivateService) addParamExecutionFunc(param V5WebsocketPriva
 
 // removeParamExecutionFunc :
 func (s *V5WebsocketPrivateService) removeParamExecutionFunc(key V5WebsocketPrivateParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramExecutionMap, key)
 }
 
 // retrieveExecutionFunc :
 func (s *V5WebsocketPrivateService) retrieveExecutionFunc(key V5WebsocketPrivateParamKey) (func(V5WebsocketPrivateExecutionResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramExecutionMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

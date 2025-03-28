@@ -107,6 +107,9 @@ func (r *V5WebsocketPrivateOrderResponse) Key() V5WebsocketPrivateParamKey {
 
 // addParamOrderFunc :
 func (s *V5WebsocketPrivateService) addParamOrderFunc(param V5WebsocketPrivateParamKey, f func(V5WebsocketPrivateOrderResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramOrderMap[param]; exist {
 		return errors.New("already registered for this param")
 	}
@@ -116,11 +119,17 @@ func (s *V5WebsocketPrivateService) addParamOrderFunc(param V5WebsocketPrivatePa
 
 // removeParamOrderFunc :
 func (s *V5WebsocketPrivateService) removeParamOrderFunc(key V5WebsocketPrivateParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramOrderMap, key)
 }
 
 // retrieveOrderFunc :
 func (s *V5WebsocketPrivateService) retrieveOrderFunc(key V5WebsocketPrivateParamKey) (func(V5WebsocketPrivateOrderResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramOrderMap[key]
 	if !exist {
 		return nil, errors.New("func not found")

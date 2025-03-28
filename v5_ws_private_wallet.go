@@ -100,6 +100,9 @@ func (r *V5WebsocketPrivateWalletResponse) Key() V5WebsocketPrivateParamKey {
 
 // addParamWalletFunc :
 func (s *V5WebsocketPrivateService) addParamWalletFunc(param V5WebsocketPrivateParamKey, f func(V5WebsocketPrivateWalletResponse) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if _, exist := s.paramWalletMap[param]; exist {
 		return errors.New("already registered for this param")
 	}
@@ -109,11 +112,17 @@ func (s *V5WebsocketPrivateService) addParamWalletFunc(param V5WebsocketPrivateP
 
 // removeParamWalletFunc :
 func (s *V5WebsocketPrivateService) removeParamWalletFunc(key V5WebsocketPrivateParamKey) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.paramWalletMap, key)
 }
 
 // retrieveWalletFunc :
 func (s *V5WebsocketPrivateService) retrieveWalletFunc(key V5WebsocketPrivateParamKey) (func(V5WebsocketPrivateWalletResponse) error, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	f, exist := s.paramWalletMap[key]
 	if !exist {
 		return nil, errors.New("func not found")
