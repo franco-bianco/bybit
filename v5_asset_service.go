@@ -24,6 +24,7 @@ type V5AssetServiceI interface {
 	GetCoinInfo(V5GetCoinInfoParam) (*V5GetCoinInfoResponse, error)
 	GetAllCoinsBalance(V5GetAllCoinsBalanceParam) (*V5GetAllCoinsBalanceResponse, error)
 	Withdraw(param V5WithdrawParam) (*V5WithdrawResponse, error)
+	GetSubDepositAddress(param V5GetSubDepositAddressParam) (*V5GetSubDepositAddressResponse, error)
 }
 
 // V5AssetService :
@@ -668,6 +669,46 @@ func (s *V5AssetService) Withdraw(param V5WithdrawParam) (*V5WithdrawResponse, e
 
 	if err := s.client.postV5JSON("/v5/asset/withdraw/create", body, &res); err != nil {
 		return &res, err
+	}
+
+	return &res, nil
+}
+
+type V5GetSubDepositAddressParam struct {
+	Coin        Coin   `url:"coin"`
+	ChainType   string `url:"chainType"`
+	SubMemberID string `url:"subMemberId"`
+}
+
+type V5GetSubDepositAddressChain struct {
+	ChainType         string `json:"chainType"`
+	AddressDeposit    string `json:"addressDeposit"`
+	TagDeposit        string `json:"tagDeposit"`
+	Chain             string `json:"chain"`
+	BatchReleaseLimit string `json:"batchReleaseLimit"`
+	ContractAddress   string `json:"contractAddress"`
+}
+
+type V5GetSubDepositAddressResult struct {
+	Coin   Coin                        `json:"coin"`
+	Chains V5GetSubDepositAddressChain `json:"chains"`
+}
+
+type V5GetSubDepositAddressResponse struct {
+	CommonV5Response `json:",inline"`
+	Result           V5GetSubDepositAddressResult `json:"result"`
+}
+
+func (s *V5AssetService) GetSubDepositAddress(param V5GetSubDepositAddressParam) (*V5GetSubDepositAddressResponse, error) {
+	var res V5GetSubDepositAddressResponse
+
+	queryString, err := query.Values(param)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.client.getV5Privately("/v5/asset/deposit/query-sub-member-address", queryString, &res); err != nil {
+		return nil, err
 	}
 
 	return &res, nil
